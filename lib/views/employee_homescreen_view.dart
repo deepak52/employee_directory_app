@@ -1,5 +1,6 @@
 //import 'package:employee_management_app/controllers/attendance_controller.dart';
 import 'package:employee_management_app/views/attendance_summary_view.dart';
+import 'package:employee_management_app/views/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/user_controller.dart';
@@ -20,6 +21,7 @@ class EmployeeHomeView extends StatelessWidget {
             onPressed: () async {
               final userController = Get.find<UserController>();
               await userController.logout();
+              Get.to(() => LoginScreen());
             },
           ),
         ],
