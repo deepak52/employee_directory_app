@@ -22,4 +22,15 @@ class UserModel {
       employeeName: json['employeeName'],
     );
   }
+
+  // Add this method to convert to JSON (Map)
+  Map<String, dynamic> toJson() {
+    return {
+      'userId': userId,
+      'username': username,
+      'role': role,
+      'employeeId': employeeId,
+      'employeeName': employeeName,
+    };
+  }
 }

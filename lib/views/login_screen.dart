@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
-import 'admin_homeScreen_view.dart';
-import 'employee_homescreen_view.dart'; // Screen after login
+// import 'admin_homeScreen_view.dart';
+// import 'employee_homescreen_view.dart';
 import 'package:get/get.dart';
 import '../controllers/user_controller.dart';
 
@@ -16,28 +16,16 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _error;
 
   void _login() async {
-    final username = _usernameController.text;
+    final username = _usernameController.text.trim();
     final password = _passwordController.text;
 
     final user = await ApiService.login(username, password);
 
     if (user != null) {
-      print("Logged in user role: ${user.role}"); // Debug
-
       final userController = Get.find<UserController>();
-      userController.setUser(user);
+      await userController.setUser(user);
 
-      final role = user.role?.toString().toLowerCase() ?? '';
-
-      if (role == 'admin') {
-        Get.off(() => AdminHomeView());
-      } else if (role == 'employee') {
-        Get.off(() => EmployeeHomeView());
-      } else {
-        setState(() {
-          _error = "Unknown user role: ${user.role}";
-        });
-      }
+      // No navigation here — UI updates reactively from main.dart
     } else {
       setState(() {
         _error = "Invalid username or password";

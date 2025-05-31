@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:get/get.dart';
 import '../controllers/attendance_controller.dart';
-import '../models/attendance_model.dart';
 
 class AttendanceMarkingView extends StatefulWidget {
   final int employeeId;
