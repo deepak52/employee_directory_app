@@ -32,6 +32,6 @@ class UserController extends GetxController {
     await prefs.remove('user');
   }
 
-  bool get isAdmin => currentUser.value?.role?.toLowerCase() == 'admin';
+  bool get isAdmin => currentUser.value?.role.toLowerCase() == 'admin';
   bool get isLoggedIn => currentUser.value != null;
 }
