@@ -96,6 +96,17 @@ class ApiService {
     }
   }
 
+  static Future<Employee?> getEmployeeById(int id) async {
+    final response = await http.get(Uri.parse('$baseUrl/Employee/$id'));
+
+    if (response.statusCode == 200) {
+      return Employee.fromJson(jsonDecode(response.body));
+    } else {
+      print("Failed to load employee: ${response.body}");
+      return null;
+    }
+  }
+
   static Future<bool> updateAttendance(Map<String, dynamic> json) async {
     final int? id = json['attendanceId'];
     if (id == null) {

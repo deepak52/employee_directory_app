@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../models/employee_model.dart';
 import '../services/api_service.dart';
-import 'employee_list_view.dart';
+import '../controllers/user_controller.dart'; // <-- Import UserController
+import 'admin_homeScreen_view.dart'; // <-- Import AdminHomeView
+import 'employee_homescreen_view.dart'; // <-- Import EmployeeHomeView
 
 class EmployeeDetailView extends StatefulWidget {
   final Employee employee;
@@ -47,8 +49,22 @@ class _EmployeeDetailViewState extends State<EmployeeDetailView> {
           "Employee updated successfully",
           backgroundColor: Colors.green.shade600,
           colorText: Colors.white,
+          duration: const Duration(seconds: 2),
         );
-        Get.off(() => EmployeeListView()); // Refresh list
+
+        await Future.delayed(const Duration(milliseconds: 800));
+
+        // Get user role from UserController
+        final userController = Get.find<UserController>();
+        final role = userController.currentUser.value?.role.toLowerCase();
+
+        if (role == 'admin') {
+          // Navigate to Admin Home and clear back stack
+          Get.offAll(() => AdminHomeView());
+        } else {
+          // Navigate to Employee Home and clear back stack
+          Get.offAll(() => EmployeeHomeView());
+        }
       }
     } catch (e) {
       Get.snackbar(
@@ -74,7 +90,7 @@ class _EmployeeDetailViewState extends State<EmployeeDetailView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: AppBar(title: Text("Edit Employee"), centerTitle: true),
+      appBar: AppBar(title: const Text("Edit Employee"), centerTitle: true),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Card(
@@ -117,7 +133,7 @@ class _EmployeeDetailViewState extends State<EmployeeDetailView> {
                     onPressed: _isSaving ? null : _updateEmployee,
                     icon:
                         _isSaving
-                            ? SizedBox(
+                            ? const SizedBox(
                               height: 20,
                               width: 20,
                               child: CircularProgressIndicator(
@@ -125,10 +141,10 @@ class _EmployeeDetailViewState extends State<EmployeeDetailView> {
                                 strokeWidth: 2,
                               ),
                             )
-                            : Icon(Icons.save, color: Colors.white),
+                            : const Icon(Icons.save, color: Colors.white),
                     label: Text(
                       _isSaving ? "Saving..." : "Save Changes",
-                      style: TextStyle(fontSize: 16, color: Colors.white),
+                      style: const TextStyle(fontSize: 16, color: Colors.white),
                     ),
                   ),
                 ),
@@ -152,7 +168,10 @@ class _EmployeeDetailViewState extends State<EmployeeDetailView> {
         prefixIcon: Icon(icon),
         filled: true,
         fillColor: Colors.grey[200],
-        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide.none,

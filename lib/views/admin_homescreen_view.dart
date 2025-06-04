@@ -14,10 +14,10 @@ class AdminHomeView extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: Text("Admin Dashboard"),
+        title: Text("Admin Dashboard", style: TextStyle(color: Colors.white)),
         actions: [
           IconButton(
-            icon: Icon(Icons.logout),
+            icon: Icon(Icons.logout, color: Colors.white),
             tooltip: 'Logout',
             onPressed: _logout,
           ),

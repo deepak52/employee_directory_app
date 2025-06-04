@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/user_controller.dart';
 import 'attendance_marking_view.dart';
+import 'employee_detail_view.dart';
+import '../services/api_service.dart';
 
 class EmployeeHomeView extends StatelessWidget {
   const EmployeeHomeView({super.key});
@@ -31,23 +33,50 @@ class EmployeeHomeView extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      const CircleAvatar(
-                        radius: 20,
-                        backgroundColor: Colors.white,
-                        child: Icon(Icons.person, color: Colors.blue),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        "Welcome!",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
+                  GestureDetector(
+                    onTap: () async {
+                      final userController = Get.find<UserController>();
+                      final user = userController.currentUser.value;
+
+                      if (user != null &&
+                          user.role.toLowerCase() == 'employee' &&
+                          user.employeeId != null) {
+                        final fullEmployee = await ApiService.getEmployeeById(
+                          user.employeeId!,
+                        );
+                        if (fullEmployee != null) {
+                          Get.to(
+                            () => EmployeeDetailView(employee: fullEmployee),
+                          );
+                        } else {
+                          Get.snackbar(
+                            'Error',
+                            'Failed to load employee details',
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white,
+                          );
+                        }
+                      }
+                    },
+
+                    child: Row(
+                      children: [
+                        const CircleAvatar(
+                          radius: 20,
+                          backgroundColor: Colors.white,
+                          child: Icon(Icons.person, color: Colors.blue),
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 12),
+                        const Text(
+                          "Welcome!",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.logout, color: Colors.white),
@@ -63,6 +92,7 @@ class EmployeeHomeView extends StatelessWidget {
           ),
         ),
       ),
+
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: GridView.count(

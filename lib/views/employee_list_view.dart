@@ -5,6 +5,7 @@ import '../models/employee_model.dart';
 import '../views/employee_form_view.dart';
 import '../views/login_screen.dart';
 import 'employee_detail_view.dart';
+import '../services/api_service.dart';
 
 class EmployeeListView extends StatefulWidget {
   @override
@@ -62,8 +63,20 @@ class _EmployeeListViewState extends State<EmployeeListView> {
                   horizontal: 16,
                   vertical: 12,
                 ),
-                onTap: () {
-                  Get.to(() => EmployeeDetailView(employee: emp));
+                onTap: () async {
+                  final fullEmp = await ApiService.getEmployeeById(
+                    emp.employeeId,
+                  );
+                  if (fullEmp != null) {
+                    Get.to(() => EmployeeDetailView(employee: fullEmp));
+                  } else {
+                    Get.snackbar(
+                      'Error',
+                      'Failed to load employee details',
+                      backgroundColor: Colors.red,
+                      colorText: Colors.white,
+                    );
+                  }
                 },
                 leading: CircleAvatar(
                   backgroundColor: Colors.blue[100],
