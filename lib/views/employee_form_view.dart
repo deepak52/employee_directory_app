@@ -128,10 +128,10 @@ class _EmployeeFormViewState extends State<EmployeeFormView> {
                                 strokeWidth: 2,
                               ),
                             )
-                            : const Icon(Icons.person_add),
+                            : const Icon(Icons.person_add, color: Colors.white),
                     label: Text(
                       isLoading ? "Saving..." : "Add Employee",
-                      style: const TextStyle(fontSize: 16),
+                      style: const TextStyle(fontSize: 16, color: Colors.white),
                     ),
                   ),
                 ),

@@ -125,10 +125,10 @@ class _EmployeeDetailViewState extends State<EmployeeDetailView> {
                                 strokeWidth: 2,
                               ),
                             )
-                            : Icon(Icons.save),
+                            : Icon(Icons.save, color: Colors.white),
                     label: Text(
                       _isSaving ? "Saving..." : "Save Changes",
-                      style: TextStyle(fontSize: 16),
+                      style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
                   ),
                 ),

@@ -88,7 +88,7 @@ class _EmployeeListViewState extends State<EmployeeListView> {
       }),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue[700],
-        child: Icon(Icons.add),
+        child: Icon(Icons.add, color: Colors.white),
         onPressed: () {
           Get.to(() => EmployeeFormView());
         },

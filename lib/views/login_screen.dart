@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get/get.dart';
+
 import '../services/api_service.dart';
+import '../controllers/user_controller.dart';
 import 'admin_homeScreen_view.dart';
 import 'employee_homescreen_view.dart';
-import 'package:get/get.dart';
-import '../controllers/user_controller.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -16,8 +18,28 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _isLoading = false;
   String? _error;
+  bool _obscurePassword = true;
+  bool _rememberMe = false;
 
-  void _login() async {
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCredentials();
+  }
+
+  Future<void> _loadSavedCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedUsername = prefs.getString('saved_username');
+    final savedPassword = prefs.getString('saved_password');
+
+    if (savedUsername != null && savedPassword != null) {
+      _usernameController.text = savedUsername;
+      _passwordController.text = savedPassword;
+      setState(() => _rememberMe = true);
+    }
+  }
+
+  Future<void> _login() async {
     setState(() {
       _isLoading = true;
       _error = null;
@@ -28,11 +50,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final user = await ApiService.login(username, password);
 
-    setState(() {
-      _isLoading = false;
-    });
+    setState(() => _isLoading = false);
 
     if (user != null) {
+      if (_rememberMe) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('saved_username', username);
+        await prefs.setString('saved_password', password);
+      } else {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.remove('saved_username');
+        await prefs.remove('saved_password');
+      }
+
       final userController = Get.find<UserController>();
       userController.setUser(user);
 
@@ -42,14 +72,10 @@ class _LoginScreenState extends State<LoginScreen> {
       } else if (role == 'employee') {
         Get.off(() => EmployeeHomeView());
       } else {
-        setState(() {
-          _error = "Unknown user role: ${user.role}";
-        });
+        setState(() => _error = "Unknown user role: ${user.role}");
       }
     } else {
-      setState(() {
-        _error = "Invalid username or password";
-      });
+      setState(() => _error = "Invalid username or password");
     }
   }
 
@@ -78,49 +104,74 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: Colors.blue[700],
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     'Login to continue',
                     style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                   ),
-                  SizedBox(height: 32),
+                  const SizedBox(height: 32),
                   TextField(
                     controller: _usernameController,
                     decoration: InputDecoration(
                       labelText: "Username",
-                      prefixIcon: Icon(Icons.person),
+                      prefixIcon: const Icon(Icons.person),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   TextField(
                     controller: _passwordController,
-                    obscureText: true,
+                    obscureText: _obscurePassword,
                     decoration: InputDecoration(
                       labelText: "Password",
-                      prefixIcon: Icon(Icons.lock),
+                      prefixIcon: const Icon(Icons.lock),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                   ),
+                  const SizedBox(height: 8),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text("Remember Me"),
+                    value: _rememberMe,
+                    onChanged: (val) {
+                      setState(() {
+                        _rememberMe = val;
+                      });
+                    },
+                    activeColor: Colors.blue,
+                  ),
+
                   if (_error != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 12),
                       child: Text(
                         _error!,
-                        style: TextStyle(color: Colors.red, fontSize: 14),
+                        style: const TextStyle(color: Colors.red, fontSize: 14),
                       ),
                     ),
-                  SizedBox(height: 30),
+                  const SizedBox(height: 5),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: _isLoading ? null : _login,
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 14),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -128,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       child:
                           _isLoading
-                              ? SizedBox(
+                              ? const SizedBox(
                                 height: 22,
                                 width: 22,
                                 child: CircularProgressIndicator(
@@ -138,7 +189,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ),
                               )
-                              : Text("Login", style: TextStyle(fontSize: 16)),
+                              : const Text(
+                                "Login",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
+                              ),
                     ),
                   ),
                 ],
