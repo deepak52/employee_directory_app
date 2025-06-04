@@ -127,12 +127,7 @@ class _AttendanceMarkingViewState extends State<AttendanceMarkingView> {
     );
   }
 
-  Widget _buildDayCell(
-    DateTime day,
-    String? status, {
-    bool isToday = false,
-    bool isSelected = false,
-  }) {
+  Widget _buildDayCell(DateTime day, String? status, {bool isToday = false}) {
     Color? bgColor;
     IconData? icon;
 
