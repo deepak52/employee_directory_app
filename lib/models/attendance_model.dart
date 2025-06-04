@@ -45,4 +45,14 @@ class AttendanceModel {
       'remarks': remarks,
     };
   }
+
+  Map<String, dynamic> toJsonForUpdate() {
+    return {
+      'attendanceId': attendanceId,
+      'employeeId': employeeId,
+      'attendanceDate': attendanceDate.toIso8601String(),
+      'isPresent': isPresent,
+      'remarks': remarks,
+    };
+  }
 }

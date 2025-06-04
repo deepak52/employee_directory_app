@@ -95,4 +95,41 @@ class ApiService {
       return null;
     }
   }
+
+  static Future<bool> updateAttendance(Map<String, dynamic> json) async {
+    final int? id = json['attendanceId'];
+    if (id == null) {
+      print("Error: attendanceId is required to update attendance.");
+      return false;
+    }
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/Attendance/$id'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(json),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      print("Update failed: ${response.statusCode}");
+      print("Response body: ${response.body}");
+      return false;
+    }
+  }
+
+  static Future<bool> updateEmployee(Employee employee) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/Employee/${employee.employeeId}'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(employee.toJson()),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      print("Update failed: ${response.body}");
+      throw Exception("Failed to update employee: ${response.body}");
+    }
+  }
 }

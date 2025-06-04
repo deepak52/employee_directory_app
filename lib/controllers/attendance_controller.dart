@@ -33,24 +33,37 @@ class AttendanceController extends GetxController {
       selectedDate.day,
     );
 
-    final existing = attendanceList.any(
+    final isCurrentMonth =
+        selectedDate.month == DateTime.now().month &&
+        selectedDate.year == DateTime.now().year;
+
+    final existingRecord = attendanceList.firstWhereOrNull(
       (record) =>
           record.employeeId == employeeId &&
           record.attendanceDate.toIso8601String().split("T")[0] ==
               dateOnly.toIso8601String().split("T")[0],
     );
 
-    if (existing) {
+    if (!isCurrentMonth) {
       return AttendanceMarkResult.alreadyMarked;
     }
 
     final record = AttendanceModel(
+      attendanceId: existingRecord?.attendanceId,
       employeeId: employeeId,
       attendanceDate: dateOnly,
       isPresent: isPresent,
     );
 
     try {
+      if (existingRecord != null) {
+        return AttendanceMarkResult.alreadyMarked;
+      }
+
+      if (!isCurrentMonth) {
+        return AttendanceMarkResult.alreadyMarked;
+      }
+
       final success = await ApiService.markAttendance(record.toJsonForCreate());
 
       if (success) {
