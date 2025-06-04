@@ -28,17 +28,20 @@ class _EmployeeFormViewState extends State<EmployeeFormView> {
     super.dispose();
   }
 
-  Future<void> _appEmployee() async {
+  Future<void> _addEmployee() async {
     if (nameController.text.isEmpty ||
-        deptController.text.isEmpty ||
-        emailController.text.isEmpty) {
-      Get.snackbar("Error", "Please fill in all fields");
+        emailController.text.isEmpty ||
+        deptController.text.isEmpty) {
+      Get.snackbar(
+        "Error",
+        "Please fill in all fields",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
       return;
     }
 
-    setState(() {
-      isLoading = true;
-    });
+    setState(() => isLoading = true);
 
     final emp = Employee(
       employeeId: 0,
@@ -50,21 +53,20 @@ class _EmployeeFormViewState extends State<EmployeeFormView> {
     try {
       final success = await controller.addEmployee(emp);
 
-      setState(() {
-        isLoading = false;
-      });
+      setState(() => isLoading = false);
 
       if (success) {
-        Get.snackbar("Success", "Employee added successfully");
-
-        await controller.fetchEmployees(); // ensure list is up to date
-
-        Get.off(() => EmployeeListView()); // navigate to list view
+        Get.snackbar(
+          "Success",
+          "Employee added successfully",
+          backgroundColor: Colors.green.shade600,
+          colorText: Colors.white,
+        );
+        await controller.fetchEmployees();
+        Get.off(() => EmployeeListView());
       }
-
-      // Show success or navigate
     } catch (e) {
-      // Show error from backend (e.g., duplicate name)
+      setState(() => isLoading = false);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(e.toString())));
@@ -74,30 +76,92 @@ class _EmployeeFormViewState extends State<EmployeeFormView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Employee Add")),
-      body: Padding(
+      backgroundColor: Colors.grey[100],
+      appBar: AppBar(title: const Text("Add Employee"), centerTitle: true),
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: InputDecoration(hintText: 'Enter Name'),
+        child: Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                _buildTextField(
+                  controller: nameController,
+                  label: "Name",
+                  icon: Icons.person,
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  controller: emailController,
+                  label: "Email",
+                  icon: Icons.email,
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  controller: deptController,
+                  label: "Department",
+                  icon: Icons.work,
+                ),
+                const SizedBox(height: 30),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      backgroundColor: Colors.blue[700],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onPressed: isLoading ? null : _addEmployee,
+                    icon:
+                        isLoading
+                            ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                            : const Icon(Icons.person_add),
+                    label: Text(
+                      isLoading ? "Saving..." : "Add Employee",
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            SizedBox(height: 12),
-            TextField(
-              controller: emailController,
-              decoration: InputDecoration(hintText: 'Enter email'),
-            ),
-            SizedBox(height: 12),
-            TextField(
-              controller: deptController,
-              decoration: InputDecoration(hintText: 'Enter Department'),
-            ),
-            SizedBox(height: 20),
-            isLoading
-                ? CircularProgressIndicator()
-                : ElevatedButton(onPressed: _appEmployee, child: Text("Add")),
-          ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+  }) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon),
+        filled: true,
+        fillColor: Colors.grey[200],
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide.none,
         ),
       ),
     );

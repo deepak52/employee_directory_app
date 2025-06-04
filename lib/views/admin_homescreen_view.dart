@@ -4,6 +4,7 @@ import 'attendance_summary_view.dart';
 import 'monthly_summary_view.dart';
 import 'package:get/get.dart';
 import '../controllers/user_controller.dart';
+import 'login_screen.dart';
 
 class AdminHomeView extends StatelessWidget {
   final UserController controller = Get.put(UserController());
@@ -14,6 +15,13 @@ class AdminHomeView extends StatelessWidget {
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
         title: Text("Admin Dashboard"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            tooltip: 'Logout',
+            onPressed: _logout,
+          ),
+        ],
         centerTitle: true,
         backgroundColor: Colors.blue[700],
       ),
@@ -61,6 +69,11 @@ class AdminHomeView extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _logout() {
+    // Clear session if needed
+    Get.offAll(() => LoginScreen());
   }
 
   Widget _buildDashboardCard({

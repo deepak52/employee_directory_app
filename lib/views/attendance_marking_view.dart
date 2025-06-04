@@ -102,6 +102,9 @@ class _AttendanceMarkingViewState extends State<AttendanceMarkingView> {
                     return _buildDayCell(normalizedDay, status, isToday: true);
                   },
                 ),
+
+                availableCalendarFormats: const {CalendarFormat.month: 'Month'},
+                headerStyle: const HeaderStyle(formatButtonVisible: false),
               ),
               const SizedBox(height: 16),
               if (_selectedDay != null) _buildAttendanceActions(),
